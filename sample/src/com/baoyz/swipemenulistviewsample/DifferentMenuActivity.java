@@ -38,9 +38,8 @@ public class DifferentMenuActivity extends Activity {
         mAdapter = new AppAdapter();
         listView.setAdapter(mAdapter);
 
-        // step 1. create a MenuCreator
+        // step 1. create a SwipeMenuExpandableCreator
         SwipeMenuExpandableCreator creator = new SwipeMenuExpandableCreator() {
-
             @Override
             public void createGroup(SwipeMenu menu) {
                 // Create different menus depending on the view type
