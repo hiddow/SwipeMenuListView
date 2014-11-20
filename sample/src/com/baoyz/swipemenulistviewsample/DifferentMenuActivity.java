@@ -10,6 +10,11 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +26,7 @@ import com.allen.expandablelistview.SwipeMenuExpandableListView;
 import com.allen.expandablelistview.SwipeMenuExpandableListView.OnMenuItemClickListenerForExpandable;
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 
 public class DifferentMenuActivity extends Activity {
@@ -35,11 +41,79 @@ public class DifferentMenuActivity extends Activity {
 
         mAppList = getPackageManager().getInstalledApplications(0);
 
+        // 1. Create View
         SwipeMenuExpandableListView listView = (SwipeMenuExpandableListView) findViewById(R.id.listView);
+
+        if (getIntent().getBooleanExtra("stick_mode", false)) {
+            // 2. Set where does the menu item stick with
+            /**
+             * STICK_TO_ITEM_RIGHT_SIDE: Stick with item right side, when swipe,
+             * it moves from outside of screen .
+             **/
+            /**
+             * STICK_TO_SCREEN: stick with the screen, it was covered and don't
+             * move ,item moves then menu show.
+             **/
+            listView.setmMenuStickTo(SwipeMenuListView.STICK_TO_SCREEN);
+        }
+        // 3. Create Adapter and set. It controls data,
+        // item view,clickable ,swipable ...
         mAdapter = new AppAdapter();
         listView.setAdapter(mAdapter);
 
-        // step 1. create a SwipeMenuExpandableCreator
+        // 4. Set OnItemLongClickListener
+        listView.setOnItemLongClickListener(new OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                int itemType = ExpandableListView.getPackedPositionType(id);
+                int childPosition, groupPosition;
+                if (itemType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+                    childPosition = ExpandableListView.getPackedPositionChild(id);
+                    groupPosition = ExpandableListView.getPackedPositionGroup(id);
+
+                    // do your per-item callback here
+                    Toast.makeText(DifferentMenuActivity.this,
+                            "long click on group " + groupPosition + " child " + childPosition, Toast.LENGTH_SHORT)
+                            .show();
+
+                    return false; // true if we consumed the click, false if not
+
+                } else if (itemType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+                    groupPosition = ExpandableListView.getPackedPositionGroup(id);
+                    // do your per-group callback here
+                    Toast.makeText(DifferentMenuActivity.this, "long click on group " + groupPosition,
+                            Toast.LENGTH_SHORT).show();
+                    return false; // true if we consumed the click, false if not
+
+                } else {
+                    // null item; we don't consume the click
+                    return false;
+                }
+            }
+        });
+
+        // 5.Set OnGroupClickListener
+        listView.setOnGroupClickListener(new OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                Toast.makeText(DifferentMenuActivity.this, "group " + groupPosition + " clicked", Toast.LENGTH_SHORT)
+                        .show();
+                return false;
+            }
+        });
+
+        // 6.Set OnChildClickListener
+        listView.setOnChildClickListener(new OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                Toast.makeText(DifferentMenuActivity.this,
+                        "group " + groupPosition + " child " + childPosition + " clicked", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+        // 7. Create and set a SwipeMenuExpandableCreator
+        // define the group and child creator function
         SwipeMenuExpandableCreator creator = new SwipeMenuExpandableCreator() {
             @Override
             public void createGroup(SwipeMenu menu) {
@@ -112,10 +186,9 @@ public class DifferentMenuActivity extends Activity {
                 menu.addMenuItem(item2);
             }
         };
-        // set creator
         listView.setMenuCreator(creator);
 
-        // step 2. listener item click event
+        // 8. Set OnMenuItemClickListener
         listView.setOnMenuItemClickListener(new OnMenuItemClickListenerForExpandable() {
             @Override
             public boolean onMenuItemClick(int groupPostion, int childPostion, SwipeMenu menu, int index) {
@@ -145,7 +218,42 @@ public class DifferentMenuActivity extends Activity {
 
     }
 
+    /**
+     * Basically, it's the same as BaseExpandableListAdapter. But added controls
+     * to every item's swipability
+     * 
+     * @author yuchentang
+     * @see android.widget.BaseExpandableListAdapter
+     */
     class AppAdapter extends BaseSwipeMenuExpandableListAdapter {
+
+        /**
+         * Whether this group item swipable
+         * 
+         * @param groupPosition
+         * @return
+         * @see com.allen.expandablelistview.BaseSwipeMenuExpandableListAdapter#isGroupSwipable(int)
+         */
+        @Override
+        public boolean isGroupSwipable(int groupPosition) {
+            return true;
+        }
+
+        /**
+         * Whether this child item swipable
+         * 
+         * @param groupPosition
+         * @param childPosition
+         * @return
+         * @see com.allen.expandablelistview.BaseSwipeMenuExpandableListAdapter#isChildSwipable(int,
+         *      int)
+         */
+        @Override
+        public boolean isChildSwipable(int groupPosition, int childPosition) {
+            if (childPosition == 0)
+                return false;
+            return true;
+        }
 
         @Override
         public int getChildType(int groupPosition, int childPosition) {
@@ -241,6 +349,7 @@ public class DifferentMenuActivity extends Activity {
                 holder = new ViewHolder(convertView);
             }
             ApplicationInfo item = (ApplicationInfo) getGroup(groupPosition);
+            convertView.setBackgroundColor(Color.GRAY);
             holder.iv_icon.setImageDrawable(item.loadIcon(getPackageManager()));
             holder.tv_name.setText("this is child");
             return convertView;
@@ -248,16 +357,6 @@ public class DifferentMenuActivity extends Activity {
 
         @Override
         public boolean isChildSelectable(int groupPosition, int childPosition) {
-            return false;
-        }
-
-        @Override
-        public boolean isGroupSwipable(int groupPosition) {
-            return true;
-        }
-
-        @Override
-        public boolean isChildSwipable(int groupPosition, int childPosition) {
             return true;
         }
     }

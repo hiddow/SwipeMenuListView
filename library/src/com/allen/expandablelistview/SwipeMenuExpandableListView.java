@@ -1,8 +1,5 @@
 package com.allen.expandablelistview; 
 
-import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuLayout;
-
 import android.content.Context;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
@@ -12,6 +9,10 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuLayout;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 
 /**
  * @author yuchentang
@@ -36,6 +37,24 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
     private OnMenuItemClickListenerForExpandable mOnMenuItemClickListener;
     private Interpolator mCloseInterpolator;
     private Interpolator mOpenInterpolator;
+
+    /** where does the menu item stick with **/
+    private int mMenuStickTo = SwipeMenuListView.STICK_TO_ITEM_RIGHT_SIDE;
+
+    /**
+     * STICK_TO_ITEM_RIGHT_SIDE: Stick with item right side, when swipe, it
+     * moves from outside of screen . STICK_TO_SCREEN: Stick with the screen, it
+     * was covered and don't move ,item moves then menu show.
+     * 
+     * @param mMenuStickTo
+     */
+    public void setmMenuStickTo(int mMenuStickTo) {
+        this.mMenuStickTo = mMenuStickTo;
+    }
+
+    public int getmMenuStickTo() {
+        return this.mMenuStickTo;
+    }
 
     public SwipeMenuExpandableListView(Context context) {
         super(context);
@@ -133,7 +152,6 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
                 mTouchState = TOUCH_STATE_NONE;
 
                 mTouchPosition = pointToPosition((int) ev.getX(), (int) ev.getY());
-
                 if (mTouchPosition == oldPos && mTouchView != null && mTouchView.isOpen()) {
                     mTouchState = TOUCH_STATE_X;
                     mTouchView.onSwipe(ev);
@@ -191,6 +209,7 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
                     ev.setAction(MotionEvent.ACTION_CANCEL);
                     super.onTouchEvent(ev);
                     return true;
+                } else if (mTouchState == TOUCH_STATE_NONE) {
                 }
                 break;
         }

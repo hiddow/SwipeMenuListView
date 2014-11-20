@@ -126,7 +126,7 @@ public class SwipeMenuExpandableListAdapter implements ExpandableListAdapter, On
             menuView.setOnSwipeItemClickListenerForExpandable(this);
             SwipeMenuExpandableListView listView = (SwipeMenuExpandableListView) parent;
             layout = new SwipeMenuLayout(contentView, menuView, listView.getCloseInterpolator(),
-                    listView.getOpenInterpolator());
+                    listView.getOpenInterpolator(), listView.getmMenuStickTo());
             layout.setPosition(groupPosition);
         } else {
             layout = (SwipeMenuLayout) convertView;
@@ -155,7 +155,7 @@ public class SwipeMenuExpandableListAdapter implements ExpandableListAdapter, On
             Log.i("ChildViewType", mAdapter.getChildType(groupPosition, childPosition) + "");
             SwipeMenuExpandableListView listView = (SwipeMenuExpandableListView) parent;
             layout = new SwipeMenuLayout(contentView, menuView, listView.getCloseInterpolator(),
-                    listView.getOpenInterpolator());
+                    listView.getOpenInterpolator(), listView.getmMenuStickTo());
             layout.setPosition(groupPosition);
         } else {
             layout = (SwipeMenuLayout) convertView;

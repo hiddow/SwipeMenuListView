@@ -12,7 +12,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:onClick="onClick"
-        android:text="single_list_view demo" />
+        android:text="Single List View, STICK_TO_ITEM_RIGHT_SIDE, Demo" />
 
     <Button
         android:id="@+id/button2"
@@ -22,6 +22,26 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/button1"
         android:onClick="onClick"
-        android:text="expandable_list_view demo" />
+        android:text="Single List View, STICK_TO_SCREEN, Demo" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/button2"
+        android:onClick="onClick"
+        android:text="Expandable List View, STICK_TO_ITEM_RIGHT_SIDE, Demo" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/button3"
+        android:onClick="onClick"
+        android:text="Expandable List View, STICK_TO_SCREEN, Demo" />
 
 </RelativeLayout>
