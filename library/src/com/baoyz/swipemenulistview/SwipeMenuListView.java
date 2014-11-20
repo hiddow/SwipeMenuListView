@@ -16,7 +16,7 @@ import android.widget.ListView;
  * @date 2014-8-18
  * 
  */
-public class SwipeMenuListView extends ListView {
+public class SwipeMenuListView extends ListView implements Swipable {
 
 	private static final int TOUCH_STATE_NONE = 0;
 	private static final int TOUCH_STATE_X = 1;
@@ -32,7 +32,7 @@ public class SwipeMenuListView extends ListView {
 	private OnSwipeListener mOnSwipeListener;
 
 	private SwipeMenuCreator mMenuCreator;
-	private OnMenuItemClickListener mOnMenuItemClickListener;
+    private OnMenuItemClickListener mOnMenuItemClickListener;
 	private Interpolator mCloseInterpolator;
 	private Interpolator mOpenInterpolator;
 
@@ -207,7 +207,7 @@ public class SwipeMenuListView extends ListView {
 	}
 
 	public void setOnMenuItemClickListener(
-			OnMenuItemClickListener onMenuItemClickListener) {
+OnMenuItemClickListener onMenuItemClickListener) {
 		this.mOnMenuItemClickListener = onMenuItemClickListener;
 	}
 
@@ -215,7 +215,7 @@ public class SwipeMenuListView extends ListView {
 		this.mOnSwipeListener = onSwipeListener;
 	}
 
-	public static interface OnMenuItemClickListener {
+    public static interface OnMenuItemClickListener {
 		boolean onMenuItemClick(int position, SwipeMenu menu, int index);
 	}
 

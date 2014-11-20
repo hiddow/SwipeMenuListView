@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -24,7 +23,7 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
 
 	private ListAdapter mAdapter;
 	private Context mContext;
-	private OnMenuItemClickListener onMenuItemClickListener;
+    private OnMenuItemClickListener onMenuItemClickListener;
 
 	public SwipeMenuAdapter(Context context, ListAdapter adapter) {
 		mAdapter = adapter;
