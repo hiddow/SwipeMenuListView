@@ -20,7 +20,7 @@ A SwipeMenu of ListView & ExpandableListView. Modified [baoyongzhang's SwipeMenu
 
 ### Step 1
 
-* add SwipeMenuListView in layout xml
+* add SwipeMenuListView or SwipeMenuExpandableListView in layout xml
 
 ```xml
 <com.baoyz.swipemenulistview.SwipeMenuListView
@@ -28,7 +28,12 @@ A SwipeMenu of ListView & ExpandableListView. Modified [baoyongzhang's SwipeMenu
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 ```
-
+```xml
+<com.baoyz.swipemenulistview.SwipeMenuExpandableListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+```
 ### Step 2
 
 * create a SwipeMenuCreator to add items.
@@ -74,6 +79,82 @@ SwipeMenuCreator creator = new SwipeMenuCreator() {
 listView.setMenuCreator(creator);
 ```
 
+* **For expandable** Create a SwipeMenuExpandableCreator to add items for group and child.
+
+```java
+SwipeMenuExpandableCreator creator = new SwipeMenuExpandableCreator() {
+            @Override
+            public void createGroup(SwipeMenu menu) {
+                // Create different menus depending on the view type
+                switch (menu.getViewType()) {
+                    case 0:
+                        createMenu1(menu);
+                        break;
+                    case 1:
+                        createMenu2(menu);
+                        break;
+                    case 2:
+                        createMenu3(menu);
+                        break;
+                }
+            }
+            @Override
+            public void createChild(SwipeMenu menu) {
+                // Create different menus depending on the view type
+                switch (menu.getViewType()) {
+                    case 0:
+                        createMenu1(menu);
+                        break;
+                    case 1:
+                        createMenu2(menu);
+                        break;
+                    case 2:
+                        createMenu3(menu);
+                        break;
+                }
+            }
+            private void createMenu1(SwipeMenu menu) {
+                SwipeMenuItem item1 = new SwipeMenuItem(getApplicationContext());
+                item1.setBackground(new ColorDrawable(Color.rgb(0xE5, 0x18, 0x5E)));
+                item1.setWidth(dp2px(90));
+                item1.setIcon(R.drawable.ic_action_favorite);
+                menu.addMenuItem(item1);
+                SwipeMenuItem item2 = new SwipeMenuItem(getApplicationContext());
+                item2.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9, 0xCE)));
+                item2.setWidth(dp2px(90));
+                item2.setIcon(R.drawable.ic_action_good);
+                menu.addMenuItem(item2);
+            }
+
+            private void createMenu2(SwipeMenu menu) {
+                SwipeMenuItem item1 = new SwipeMenuItem(getApplicationContext());
+                item1.setBackground(new ColorDrawable(Color.rgb(0xE5, 0xE0, 0x3F)));
+                item1.setWidth(dp2px(90));
+                item1.setIcon(R.drawable.ic_action_important);
+                menu.addMenuItem(item1);
+                SwipeMenuItem item2 = new SwipeMenuItem(getApplicationContext());
+                item2.setBackground(new ColorDrawable(Color.rgb(0xF9, 0x3F, 0x25)));
+                item2.setWidth(dp2px(90));
+                item2.setIcon(R.drawable.ic_action_discard);
+                menu.addMenuItem(item2);
+            }
+
+            private void createMenu3(SwipeMenu menu) {
+                SwipeMenuItem item1 = new SwipeMenuItem(getApplicationContext());
+                item1.setBackground(new ColorDrawable(Color.rgb(0x30, 0xB1, 0xF5)));
+                item1.setWidth(dp2px(90));
+                item1.setIcon(R.drawable.ic_action_about);
+                menu.addMenuItem(item1);
+                SwipeMenuItem item2 = new SwipeMenuItem(getApplicationContext());
+                item2.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9, 0xCE)));
+                item2.setWidth(dp2px(90));
+                item2.setIcon(R.drawable.ic_action_share);
+                menu.addMenuItem(item2);
+            }
+        };
+        // set creator
+        listView.setMenuCreator(creator);
+```
 ### Step 3
 
 * listener item click event
@@ -95,6 +176,52 @@ listView.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 	}
 });
 ```
+**For expandable** *Notice that the group and child use the same onMenuClickListener, the difference is that when a group's menu was clicked, the param childPosition will be SwipeMenuExpandableListAdapter.GROUP_INDEX. Otherwise, it's the child index*
+```java
+// step 2. listener item click event
+        listView.setOnMenuItemClickListener(new OnMenuItemClickListenerForExpandable() {
+            @Override
+            public boolean onMenuItemClick(int groupPostion, int childPostion, SwipeMenu menu, int index) {
+                ApplicationInfo item = mAppList.get(groupPostion);
+                // childPostion == -1991 means it was the group's swipe menu was
+                // clicked
+                String s = "Group " + groupPostion;
+                if (childPostion != SwipeMenuExpandableListAdapter.GROUP_INDEX) {
+                    s += " , child " + childPostion;
+                }
+                s += " , menu index:" + index + " was clicked";
+                switch (index) {
+                    case 0:
+                        // open
+                        break;
+                    case 1:
+                        // delete
+                        // delete(item);
+                        mAppList.remove(groupPostion);
+                        mAdapter.notifyDataSetChanged();
+                        break;
+                }
+                Toast.makeText(DifferentMenuActivity.this, s, Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+```
+### Control ExpandableListView's swipable
+Use those two methods to control
+```
+@Override
+    class AppAdapter extends BaseSwipeMenuExpandableListAdapter {
+        public boolean isGroupSwipable(int groupPosition) {
+            return true;
+        }
+
+        @Override
+        public boolean isChildSwipable(int groupPosition, int childPosition) {
+            return true;
+        }
+    }
+```
+
 
 ### Create Different Menu
 
