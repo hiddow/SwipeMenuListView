@@ -1,4 +1,4 @@
-package com.baoyz.swipemenulistview;
+package com.allen.expandablelistview;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -7,8 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
 
-import com.baoyz.swipemenulistview.SwipeMenuExpandableListView.OnMenuItemClickListenerForExpandable;
-import com.baoyz.swipemenulistview.SwipeMenuViewForExpandable.OnSwipeItemClickListenerForExpandable;
+import com.allen.expandablelistview.SwipeMenuExpandableListView.OnMenuItemClickListenerForExpandable;
+import com.allen.expandablelistview.SwipeMenuViewForExpandable.OnSwipeItemClickListenerForExpandable;
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuLayout;
 
 /**
  * 

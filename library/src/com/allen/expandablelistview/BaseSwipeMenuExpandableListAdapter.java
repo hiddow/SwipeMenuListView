@@ -1,4 +1,4 @@
-package com.baoyz.swipemenulistview; 
+package com.allen.expandablelistview; 
 
 import android.widget.BaseExpandableListAdapter;
 

@@ -1,4 +1,8 @@
-package com.baoyz.swipemenulistview;
+package com.allen.expandablelistview;
+
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuLayout;
+import com.baoyz.swipemenulistview.SwipeMenuView;
 
 import android.view.View;
 

@@ -1,4 +1,6 @@
-package com.baoyz.swipemenulistview;
+package com.allen.expandablelistview;
+
+import com.baoyz.swipemenulistview.SwipeMenu;
 
 
 /**

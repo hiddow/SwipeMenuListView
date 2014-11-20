@@ -14,13 +14,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baoyz.swipemenulistview.BaseSwipeMenuExpandableListAdapter;
+import com.allen.expandablelistview.BaseSwipeMenuExpandableListAdapter;
+import com.allen.expandablelistview.SwipeMenuExpandableCreator;
+import com.allen.expandablelistview.SwipeMenuExpandableListAdapter;
+import com.allen.expandablelistview.SwipeMenuExpandableListView;
+import com.allen.expandablelistview.SwipeMenuExpandableListView.OnMenuItemClickListenerForExpandable;
 import com.baoyz.swipemenulistview.SwipeMenu;
-import com.baoyz.swipemenulistview.SwipeMenuExpandableCreator;
-import com.baoyz.swipemenulistview.SwipeMenuExpandableListAdapter;
-import com.baoyz.swipemenulistview.SwipeMenuExpandableListView;
-import com.baoyz.swipemenulistview.SwipeMenuExpandableListView.OnMenuItemClickListenerForExpandable;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
+
 
 public class DifferentMenuActivity extends Activity {
 

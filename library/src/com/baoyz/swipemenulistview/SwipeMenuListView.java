@@ -1,5 +1,7 @@
 package com.baoyz.swipemenulistview;
 
+import com.allen.expandablelistview.Swipable;
+
 import android.content.Context;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;

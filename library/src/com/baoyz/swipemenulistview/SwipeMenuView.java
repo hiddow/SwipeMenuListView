@@ -2,6 +2,8 @@ package com.baoyz.swipemenulistview;
 
 import java.util.List;
 
+import com.allen.expandablelistview.Swipable;
+
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
