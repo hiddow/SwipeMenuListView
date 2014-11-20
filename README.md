@@ -1,13 +1,20 @@
-SwipeMenuListView
+SwipeMenu for ListView & ExpandableListView
 =================
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-SwipeMenuListView-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/912)
 
-A SwipeMenu of ListView.
+A SwipeMenu of ListView & ExpandableListView. Modified [baoyongzhang's SwipeMenuListView][1], add support for ExpandableListView
 
 # Demo
-<p>
-   <img src="https://raw.githubusercontent.com/baoyongzhang/SwipeMenuListView/master/demo.gif" width="320" alt="Screenshot"/>
-</p>
+<table>
+    <tr>
+        <th>List View</th>
+        <th>Expandable List View with different menus</th>
+    </tr>
+    <tr>
+        <td><img src="https://raw.githubusercontent.com/baoyongzhang/SwipeMenuListView/master/demo.gif" width="320" alt="Screenshot"/></td>
+        <td><img src="https://raw.githubusercontent.com/tycallen/SwipeMenuListView/master/swipe_expandable_list.gif" width="320" alt="Screenshot"/></td>
+    </tr>
+</table>
 
 # Usage
 
