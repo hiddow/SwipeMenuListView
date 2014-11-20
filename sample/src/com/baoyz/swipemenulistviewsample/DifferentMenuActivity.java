@@ -76,14 +76,14 @@ public class DifferentMenuActivity extends Activity {
                             "long click on group " + groupPosition + " child " + childPosition, Toast.LENGTH_SHORT)
                             .show();
 
-                    return false; // true if we consumed the click, false if not
+                    return true; // true if we consumed the click, false if not
 
                 } else if (itemType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
                     groupPosition = ExpandableListView.getPackedPositionGroup(id);
                     // do your per-group callback here
                     Toast.makeText(DifferentMenuActivity.this, "long click on group " + groupPosition,
                             Toast.LENGTH_SHORT).show();
-                    return false; // true if we consumed the click, false if not
+                    return true; // true if we consumed the click, false if not
 
                 } else {
                     // null item; we don't consume the click

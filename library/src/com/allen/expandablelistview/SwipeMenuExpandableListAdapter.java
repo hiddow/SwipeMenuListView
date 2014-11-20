@@ -116,8 +116,8 @@ public class SwipeMenuExpandableListAdapter implements ExpandableListAdapter, On
         if (!mAdapter.isGroupSwipable(groupPosition))
             return mAdapter.getGroupView(groupPosition, isExpanded, convertView, parent);
         SwipeMenuLayout layout = null;
-        if (convertView == null) {
-            View contentView = mAdapter.getGroupView(groupPosition, isExpanded, convertView, parent);
+        if (convertView == null || !(convertView instanceof SwipeMenuLayout)) {
+            View contentView = mAdapter.getGroupView(groupPosition, isExpanded, null, parent);
             SwipeMenu menu = new SwipeMenu(mContext);
             menu.setViewType(mAdapter.getGroupType(groupPosition));
             createGroupMenu(menu);
@@ -144,8 +144,8 @@ public class SwipeMenuExpandableListAdapter implements ExpandableListAdapter, On
             return mAdapter.getChildView(groupPosition, childPosition, isLastChild, convertView, parent);
         }
         SwipeMenuLayout layout = null;
-        if (convertView == null) {
-            View contentView = mAdapter.getChildView(groupPosition, childPosition, isLastChild, convertView, parent);
+        if (convertView == null || !(convertView instanceof SwipeMenuLayout)) {
+            View contentView = mAdapter.getChildView(groupPosition, childPosition, isLastChild, null, parent);
             SwipeMenu menu = new SwipeMenu(mContext);
             menu.setViewType(mAdapter.getChildType(groupPosition, childPosition));
             createChildMenu(menu);
