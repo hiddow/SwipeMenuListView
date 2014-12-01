@@ -113,19 +113,15 @@ public class SwipeMenuLayout extends FrameLayout {
         };
         mGestureDetector = new GestureDetectorCompat(getContext(), mGestureListener);
 
-        Context c = mMenuStickTo == SwipeMenuListView.STICK_TO_ITEM_RIGHT_SIDE ? getContext() : mContentView
-                .getContext();
-        // mScroller = ScrollerCompat.create(getContext(), new
-        // BounceInterpolator());
         if (mCloseInterpolator != null) {
-            mCloseScroller = ScrollerCompat.create(c, mCloseInterpolator);
+            mCloseScroller = ScrollerCompat.create(getContext(), mCloseInterpolator);
         } else {
-            mCloseScroller = ScrollerCompat.create(c);
+            mCloseScroller = ScrollerCompat.create(getContext());
         }
         if (mOpenInterpolator != null) {
-            mOpenScroller = ScrollerCompat.create(c, mOpenInterpolator);
+            mOpenScroller = ScrollerCompat.create(getContext(), mOpenInterpolator);
         } else {
-            mOpenScroller = ScrollerCompat.create(c);
+            mOpenScroller = ScrollerCompat.create(getContext());
         }
 
         LayoutParams contentParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -202,8 +198,8 @@ public class SwipeMenuLayout extends FrameLayout {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return super.onTouchEvent(event);
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return false;
     }
 
     private void swipe(int dis) {
