@@ -288,8 +288,13 @@ public class SwipeMenuLayout extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         mContentView.layout(0, 0, getMeasuredWidth(), mContentView.getMeasuredHeight());
-        mMenuView.layout(getMeasuredWidth() - mMenuView.getMeasuredWidth(), 0, getMeasuredWidth(),
-                mContentView.getMeasuredHeight());
+        if (mMenuStickTo == SwipeMenuListView.STICK_TO_ITEM_RIGHT_SIDE) {
+            mMenuView.layout(getMeasuredWidth(), 0, getMeasuredWidth() + mMenuView.getMeasuredWidth(),
+                    mContentView.getMeasuredHeight());
+        } else {
+            mMenuView.layout(getMeasuredWidth() - mMenuView.getMeasuredWidth(), 0, getMeasuredWidth(),
+                    mContentView.getMeasuredHeight());
+        }
         // setMenuHeight(mContentView.getMeasuredHeight());
         // bringChildToFront(mContentView);
     }
