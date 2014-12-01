@@ -113,19 +113,15 @@ public class SwipeMenuLayout extends FrameLayout {
         };
         mGestureDetector = new GestureDetectorCompat(getContext(), mGestureListener);
 
-        Context c = mMenuStickTo == SwipeMenuListView.STICK_TO_ITEM_RIGHT_SIDE ? getContext() : mContentView
-                .getContext();
-        // mScroller = ScrollerCompat.create(getContext(), new
-        // BounceInterpolator());
         if (mCloseInterpolator != null) {
-            mCloseScroller = ScrollerCompat.create(c, mCloseInterpolator);
+            mCloseScroller = ScrollerCompat.create(getContext(), mCloseInterpolator);
         } else {
-            mCloseScroller = ScrollerCompat.create(c);
+            mCloseScroller = ScrollerCompat.create(getContext());
         }
         if (mOpenInterpolator != null) {
-            mOpenScroller = ScrollerCompat.create(c, mOpenInterpolator);
+            mOpenScroller = ScrollerCompat.create(getContext(), mOpenInterpolator);
         } else {
-            mOpenScroller = ScrollerCompat.create(c);
+            mOpenScroller = ScrollerCompat.create(getContext());
         }
 
         LayoutParams contentParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
@@ -202,8 +198,8 @@ public class SwipeMenuLayout extends FrameLayout {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return super.onTouchEvent(event);
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return false;
     }
 
     private void swipe(int dis) {
@@ -288,8 +284,13 @@ public class SwipeMenuLayout extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         mContentView.layout(0, 0, getMeasuredWidth(), mContentView.getMeasuredHeight());
-        mMenuView.layout(getMeasuredWidth() - mMenuView.getMeasuredWidth(), 0, getMeasuredWidth(),
-                mContentView.getMeasuredHeight());
+        if (mMenuStickTo == SwipeMenuListView.STICK_TO_ITEM_RIGHT_SIDE) {
+            mMenuView.layout(getMeasuredWidth(), 0, getMeasuredWidth() + mMenuView.getMeasuredWidth(),
+                    mContentView.getMeasuredHeight());
+        } else {
+            mMenuView.layout(getMeasuredWidth() - mMenuView.getMeasuredWidth(), 0, getMeasuredWidth(),
+                    mContentView.getMeasuredHeight());
+        }
         // setMenuHeight(mContentView.getMeasuredHeight());
         // bringChildToFront(mContentView);
     }
