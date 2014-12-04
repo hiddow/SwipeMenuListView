@@ -199,7 +199,23 @@ public class SwipeMenuLayout extends FrameLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        return false;
+        if (inRangeOfView(mMenuView, ev) && isOpen())
+            return super.dispatchTouchEvent(ev);
+        boolean res = mContentView.dispatchTouchEvent(ev);
+        Log.i("swipe", "layout dispatch:" + res);
+        return res;
+    }
+
+    private boolean inRangeOfView(View view, MotionEvent ev) {
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        int x = location[0];
+        int y = location[1];
+        if (ev.getRawX() < x || ev.getRawX() > (x + view.getWidth()) || ev.getRawY() < y
+                || ev.getRawY() > (y + view.getHeight())) {
+            return false;
+        }
+        return true;
     }
 
     private void swipe(int dis) {
