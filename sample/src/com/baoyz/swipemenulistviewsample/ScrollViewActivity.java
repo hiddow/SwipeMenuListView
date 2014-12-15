@@ -16,12 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baoyz.swipemenulistview.BaseSwipeListAdapter;
-import com.baoyz.swipemenulistview.ContentViewWrapper;
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
@@ -29,16 +28,14 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.baoyz.swipemenulistview.SwipeMenuListView.OnMenuItemClickListener;
 import com.baoyz.swipemenulistview.SwipeMenuListView.OnSwipeListener;
 
-public class SimpleActivity extends Activity {
-
+public class ScrollViewActivity extends Activity {
     private List<ApplicationInfo> mAppList;
     private AppAdapter mAdapter;
     private SwipeMenuListView mListView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_for_simple);
+        setContentView(R.layout.activity_scroll_view);
 
         mAppList = getPackageManager().getInstalledApplications(0);
 
@@ -131,7 +128,6 @@ public class SimpleActivity extends Activity {
                 return false;
             }
         });
-
     }
 
     private void delete(ApplicationInfo item) {
@@ -164,7 +160,7 @@ public class SimpleActivity extends Activity {
         }
     }
 
-    class AppAdapter extends BaseSwipeListAdapter {
+    class AppAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
@@ -182,19 +178,16 @@ public class SimpleActivity extends Activity {
         }
 
         @Override
-        public ContentViewWrapper getViewAndReusable(int position, View convertView, ViewGroup parent) {
-            boolean reUsable = true;
+        public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = View.inflate(getApplicationContext(), R.layout.item_list_app, null);
-                convertView.setTag(new ViewHolder(convertView));
-                reUsable = false;
+                new ViewHolder(convertView);
             }
             ViewHolder holder = (ViewHolder) convertView.getTag();
             ApplicationInfo item = getItem(position);
             holder.iv_icon.setImageDrawable(item.loadIcon(getPackageManager()));
             holder.tv_name.setText(item.loadLabel(getPackageManager()));
-            holder.tv_name.setClickable(true);
-            return new ContentViewWrapper(convertView, reUsable);
+            return convertView;
         }
 
         class ViewHolder {

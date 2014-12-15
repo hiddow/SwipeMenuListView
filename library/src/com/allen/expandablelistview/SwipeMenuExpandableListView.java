@@ -3,6 +3,7 @@ package com.allen.expandablelistview;
 import android.content.Context;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -135,11 +136,25 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return super.onInterceptTouchEvent(ev);
+        boolean res = super.onInterceptTouchEvent(ev);
+        Log.i("swipe", "list intercept:" + res);
+        return res;
+    }
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        boolean res = super.dispatchTouchEvent(ev);
+        Log.i("swipe", "list dispatch:" + res);
+        return res;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        boolean res = this.takeTouchEvent(ev);
+        Log.i("swipe", "list touch:" + res);
+        return res;
+    }
+
+    public boolean takeTouchEvent(MotionEvent ev) {
         if (ev.getAction() != MotionEvent.ACTION_DOWN && mTouchView == null)
             return super.onTouchEvent(ev);
         int action = MotionEventCompat.getActionMasked(ev);
@@ -163,7 +178,7 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
                 if (mTouchView != null && mTouchView.isOpen()) {
                     mTouchView.smoothCloseMenu();
                     mTouchView = null;
-                    return super.onTouchEvent(ev);
+                    // return super.onTouchEvent(ev);
                 }
                 if (view instanceof SwipeMenuLayout) {
                     mTouchView = (SwipeMenuLayout) view;

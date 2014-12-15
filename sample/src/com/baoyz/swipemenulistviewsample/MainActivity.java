@@ -32,6 +32,11 @@ public class MainActivity extends Activity {
                 j.putExtra("stick_mode", true);
                 startActivity(j);
                 break;
+            case R.id.button5:
+                Intent k = new Intent(this, ScrollViewActivity.class);
+                k.putExtra("stick_mode", true);
+                startActivity(k);
+                break;
         }
     }
 }

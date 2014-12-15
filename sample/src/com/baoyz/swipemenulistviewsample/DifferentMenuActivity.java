@@ -24,6 +24,7 @@ import com.allen.expandablelistview.SwipeMenuExpandableCreator;
 import com.allen.expandablelistview.SwipeMenuExpandableListAdapter;
 import com.allen.expandablelistview.SwipeMenuExpandableListView;
 import com.allen.expandablelistview.SwipeMenuExpandableListView.OnMenuItemClickListenerForExpandable;
+import com.baoyz.swipemenulistview.ContentViewWrapper;
 import com.baoyz.swipemenulistview.SwipeMenu;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
@@ -218,6 +219,9 @@ public class DifferentMenuActivity extends Activity {
 
     }
 
+    public void btnClick(View view) {
+
+    }
     /**
      * Basically, it's the same as BaseExpandableListAdapter. But added controls
      * to every item's swipability
@@ -322,37 +326,40 @@ public class DifferentMenuActivity extends Activity {
         }
 
         @Override
-        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        public ContentViewWrapper getGroupViewAndReUsable(int groupPosition, boolean isExpanded, View convertView,
+                ViewGroup parent) {
+            boolean reUseable = true;
             if (convertView == null) {
                 convertView = View.inflate(getApplicationContext(), R.layout.item_list_app, null);
-                new ViewHolder(convertView);
+                convertView.setTag(new ViewHolder(convertView));
+                reUseable = false;
             }
             ViewHolder holder = (ViewHolder) convertView.getTag();
-            if (null == holder) {
-                holder = new ViewHolder(convertView);
-            }
             ApplicationInfo item = (ApplicationInfo) getGroup(groupPosition);
             holder.iv_icon.setImageDrawable(item.loadIcon(getPackageManager()));
             holder.tv_name.setText(item.loadLabel(getPackageManager()));
-            return convertView;
+            return new ContentViewWrapper(convertView, reUseable);
         }
 
         @Override
-        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView,
+        public ContentViewWrapper getChildViewAndReUsable(int groupPosition, int childPosition, boolean isLastChild, View convertView,
                 ViewGroup parent) {
+            boolean reUseable = true;
             if (convertView == null) {
                 convertView = View.inflate(getApplicationContext(), R.layout.item_list_app, null);
-                new ViewHolder(convertView);
+                convertView.setTag(new ViewHolder(convertView));
+                reUseable = false;
             }
             ViewHolder holder = (ViewHolder) convertView.getTag();
             if (null == holder) {
                 holder = new ViewHolder(convertView);
             }
+
             ApplicationInfo item = (ApplicationInfo) getGroup(groupPosition);
             convertView.setBackgroundColor(Color.GRAY);
             holder.iv_icon.setImageDrawable(item.loadIcon(getPackageManager()));
             holder.tv_name.setText("this is child");
-            return convertView;
+            return new ContentViewWrapper(convertView, reUseable);
         }
 
         @Override

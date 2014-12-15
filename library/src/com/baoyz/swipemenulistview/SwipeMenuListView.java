@@ -3,7 +3,6 @@ package com.baoyz.swipemenulistview;
 import android.content.Context;
 import android.support.v4.view.MotionEventCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -87,7 +86,12 @@ public class SwipeMenuListView extends ListView implements Swipable {
     }
 
     @Override
+    @Deprecated
     public void setAdapter(ListAdapter adapter) {
+        throw new IllegalArgumentException("adapter should be type :BaseSwipeListAdapter");
+    }
+
+    public void setAdapter(BaseSwipeListAdapter adapter) {
         super.setAdapter(new SwipeMenuAdapter(getContext(), adapter) {
             @Override
             public void createMenu(SwipeMenu menu) {
@@ -126,20 +130,12 @@ public class SwipeMenuListView extends ListView implements Swipable {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        boolean res = super.dispatchTouchEvent(ev);
-        Log.i("Touch info", "dispatchTouchEvent=" + res);
-        return res;
-    }
-
-    @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return super.onInterceptTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        Log.i("Touch info", "onTouchEvent");
         if (ev.getAction() != MotionEvent.ACTION_DOWN && mTouchView == null)
             return super.onTouchEvent(ev);
         int action = MotionEventCompat.getActionMasked(ev);
@@ -164,7 +160,7 @@ public class SwipeMenuListView extends ListView implements Swipable {
                 if (mTouchView != null && mTouchView.isOpen()) {
                     mTouchView.smoothCloseMenu();
                     mTouchView = null;
-                    return super.onTouchEvent(ev);
+                    // return super.onTouchEvent(ev);
                 }
                 if (view instanceof SwipeMenuLayout) {
                     mTouchView = (SwipeMenuLayout) view;

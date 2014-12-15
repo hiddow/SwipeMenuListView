@@ -21,11 +21,11 @@ import com.baoyz.swipemenulistview.SwipeMenuView.OnSwipeItemClickListener;
 public class SwipeMenuAdapter implements WrapperListAdapter,
 		OnSwipeItemClickListener {
 
-	private ListAdapter mAdapter;
+    private BaseSwipeListAdapter mAdapter;
 	private Context mContext;
     private OnMenuItemClickListener onMenuItemClickListener;
 
-	public SwipeMenuAdapter(Context context, ListAdapter adapter) {
+    public SwipeMenuAdapter(Context context, BaseSwipeListAdapter adapter) {
 		mAdapter = adapter;
 		mContext = context;
 	}
@@ -47,9 +47,13 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		SwipeMenuLayout layout = null;
-		if (convertView == null) {
-			View contentView = mAdapter.getView(position, convertView, parent);
+        SwipeMenuLayout layout = null;
+        View subConvert = null;
+        if (convertView instanceof SwipeMenuLayout) {
+            subConvert = ((SwipeMenuLayout) convertView).getContentView();
+        }
+        ContentViewWrapper contentViewWrapper = mAdapter.getViewAndReusable(position, subConvert, parent);
+        if (convertView == null || !contentViewWrapper.ifReUsable) {
 			SwipeMenu menu = new SwipeMenu(mContext);
 			menu.setViewType(mAdapter.getItemViewType(position));
 			createMenu(menu);
@@ -57,7 +61,7 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
 					(SwipeMenuListView) parent);
 			menuView.setOnSwipeItemClickListener(this);
 			SwipeMenuListView listView = (SwipeMenuListView) parent;
-			layout = new SwipeMenuLayout(contentView, menuView,
+            layout = new SwipeMenuLayout(contentViewWrapper.view, menuView,
 					listView.getCloseInterpolator(),
                     listView.getOpenInterpolator(), listView.getmMenuStickTo());
 			layout.setPosition(position);
@@ -65,8 +69,6 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
 			layout = (SwipeMenuLayout) convertView;
 			layout.closeMenu();
 			layout.setPosition(position);
-			View view = mAdapter.getView(position, layout.getContentView(),
-					parent);
 		}
 		return layout;
 	}

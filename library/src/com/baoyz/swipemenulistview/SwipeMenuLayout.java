@@ -30,7 +30,6 @@ public class SwipeMenuLayout extends FrameLayout {
 
     private View mContentView;
     private SwipeMenuView mMenuView;
-    private int mDownX;
     private int state = STATE_CLOSE;
     private GestureDetectorCompat mGestureDetector;
     private OnGestureListener mGestureListener;
@@ -44,7 +43,8 @@ public class SwipeMenuLayout extends FrameLayout {
     private Interpolator mCloseInterpolator;
     private Interpolator mOpenInterpolator;
     /** where does the menu item stick with **/
-    private int mMenuStickTo = SwipeMenuListView.STICK_TO_ITEM_RIGHT_SIDE;
+    private int mMenuStickTo = SwipeMenuListView.STICK_TO_SCREEN;
+    private int mDownX;
     public SwipeMenuLayout(View contentView, SwipeMenuView menuView) {
         this(contentView, menuView, null, null, SwipeMenuListView.STICK_TO_ITEM_RIGHT_SIDE);
     }
@@ -203,6 +203,19 @@ public class SwipeMenuLayout extends FrameLayout {
             return super.dispatchTouchEvent(ev);
         boolean res = mContentView.dispatchTouchEvent(ev);
         Log.i("swipe", "layout dispatch:" + res);
+        return res;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        boolean res = super.onInterceptTouchEvent(ev);
+        Log.i("swipe", "layout intercept:" + res);
+        return res;
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        boolean res = super.onTouchEvent(ev);
+        Log.i("swipe", "layout ontouch:" + res);
         return res;
     }
 

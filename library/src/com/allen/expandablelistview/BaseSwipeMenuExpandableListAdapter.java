@@ -1,6 +1,10 @@
 package com.allen.expandablelistview; 
 
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+
+import com.baoyz.swipemenulistview.ContentViewWrapper;
 
 /**
  * @author yuchentang A sub class of BaseExpandableListAdapter , add controll to
@@ -12,4 +16,20 @@ public abstract class BaseSwipeMenuExpandableListAdapter extends BaseExpandableL
     public abstract boolean isGroupSwipable(int groupPosition);
 
     public abstract boolean isChildSwipable(int groupPosition, int childPosition);
+    
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        return getGroupViewAndReUsable(groupPosition, isExpanded, convertView, parent).view;
+    }
+
+    public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView,
+            ViewGroup parent) {
+        return getChildViewAndReUsable(groupPosition, childPosition, isLastChild, convertView, parent).view;
+    }
+
+    public abstract ContentViewWrapper getGroupViewAndReUsable(int groupPosition, boolean isExpanded, View convertView,
+            ViewGroup parent);
+
+    public abstract ContentViewWrapper getChildViewAndReUsable(int groupPosition, int childPosition,
+            boolean isLastChild, View convertView,
+ ViewGroup parent);
 }
