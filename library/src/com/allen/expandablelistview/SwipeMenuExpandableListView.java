@@ -103,8 +103,19 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
             public void onItemClick(SwipeMenuViewForExpandable view, SwipeMenu menu, int index) {
                 boolean flag = false;
                 if (mOnMenuItemClickListener != null) {
-                    flag = mOnMenuItemClickListener.onMenuItemClick(view.getGroupPosition(), view.getChildPostion(),
-                            menu, index);
+                    int position = getPositionForView(view);
+                    long packed = getExpandableListPosition(position);
+                    int positionType = getPackedPositionType(packed);
+                    int groupPosition, childPosition = GROUP_INDEX;
+                    if (positionType != PACKED_POSITION_TYPE_NULL) {
+                        // (Child类型时也有Group信息)
+                        groupPosition = getPackedPositionGroup(packed);
+                        // 如果是child类型,则取出childPosition
+                        if (positionType == PACKED_POSITION_TYPE_CHILD) {
+                            childPosition = getPackedPositionChild(packed);
+                        }
+                        flag = mOnMenuItemClickListener.onMenuItemClick(groupPosition, childPosition, menu, index);
+                    }
                 }
                 if (mTouchView != null && !flag) {
                     mTouchView.smoothCloseMenu();
