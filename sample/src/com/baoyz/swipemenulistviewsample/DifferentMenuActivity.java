@@ -7,8 +7,10 @@ import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -34,16 +36,16 @@ public class DifferentMenuActivity extends Activity {
 
     private List<ApplicationInfo> mAppList;
     private AppAdapter mAdapter;
-
+private SwipeMenuExpandableListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
         mAppList = getPackageManager().getInstalledApplications(0);
-
+        findViewById(R.id.btn).setOnClickListener(l);
         // 1. Create View
-        SwipeMenuExpandableListView listView = (SwipeMenuExpandableListView) findViewById(R.id.listView);
+        listView = (SwipeMenuExpandableListView) findViewById(R.id.listView);
 
         if (getIntent().getBooleanExtra("stick_mode", false)) {
             // 2. Set where does the menu item stick with
@@ -367,6 +369,14 @@ public class DifferentMenuActivity extends Activity {
             return true;
         }
     }
+    OnClickListener l = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			listView.notifyDataSetChanged(true);
+			listView.smoothOpenMenu(0);
+		}
+	};
 
     private int dp2px(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());

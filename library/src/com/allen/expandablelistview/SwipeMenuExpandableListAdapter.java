@@ -24,14 +24,26 @@ public class SwipeMenuExpandableListAdapter implements ExpandableListAdapter, On
                                              // clicked, it fires an onclick
                                                 // event which childPostion is
                                                 // -1991
-
+    private SwipeMenuExpandableListView mList;
+    public void notifyDataSetChanged(boolean ifKeepMenuOpen){
+    	int i = -1;
+    	if(ifKeepMenuOpen){
+    		i = mList.getOpenedPosition();
+    	}
+    	mAdapter.notifyDataSetChanged();
+    	Log.i("keep","posi is:"+i);
+    	if(ifKeepMenuOpen && i >= 0){
+    		mList.smoothOpenMenu(i);
+    	}
+    }    
     private BaseSwipeMenuExpandableListAdapter mAdapter;
     private Context mContext;
     private OnMenuItemClickListenerForExpandable onMenuItemClickListener;
 
-    public SwipeMenuExpandableListAdapter(Context context, BaseSwipeMenuExpandableListAdapter adapter) {
+    public SwipeMenuExpandableListAdapter(Context context, BaseSwipeMenuExpandableListAdapter adapter,SwipeMenuExpandableListView lv) {
         mAdapter = adapter;
         mContext = context;
+        mList = lv;
     }
 
     public void createGroupMenu(SwipeMenu menu) {

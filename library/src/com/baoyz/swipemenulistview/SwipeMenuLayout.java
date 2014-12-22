@@ -287,6 +287,7 @@ public class SwipeMenuLayout extends FrameLayout {
         if (state == STATE_CLOSE) {
             state = STATE_OPEN;
             swipe(mMenuView.getWidth());
+            postInvalidate();
         }
     }
 

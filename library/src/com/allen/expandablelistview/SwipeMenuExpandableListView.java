@@ -38,6 +38,7 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
     private OnMenuItemClickListenerForExpandable mOnMenuItemClickListener;
     private Interpolator mCloseInterpolator;
     private Interpolator mOpenInterpolator;
+    private SwipeMenuExpandableListAdapter mAdapter;
 
     /** where does the menu item stick with **/
     private int mMenuStickTo = SwipeMenuListView.STICK_TO_ITEM_RIGHT_SIDE;
@@ -77,14 +78,23 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
         MAX_Y = dp2px(MAX_Y);
         mTouchState = TOUCH_STATE_NONE;
     }
-
+    
+    public int getOpenedPosition(){
+    	if(mTouchView == null || !mTouchView.isOpen())
+    		return -1;
+    	return this.getPositionForView(mTouchView);
+    }
+    public void notifyDataSetChanged(boolean ifKeepMenuOpen){
+    	if(mAdapter!=null)
+    		mAdapter.notifyDataSetChanged(ifKeepMenuOpen);
+    }
     /**
-     * 强制使用此方法，BaseExpandableListAdapter，可以切换child的layout
+     * 寮哄埗浣跨敤姝ゆ柟娉曪紝BaseExpandableListAdapter锛屽彲浠ュ垏鎹hild鐨刲ayout
      * 
      * @param adapter
      */
     public void setAdapter(BaseSwipeMenuExpandableListAdapter adapter) {
-        super.setAdapter(new SwipeMenuExpandableListAdapter(getContext(), adapter) {
+    	mAdapter = new SwipeMenuExpandableListAdapter(getContext(), adapter,this) {
             @Override
             public void createGroupMenu(SwipeMenu menu) {
                 if (mMenuCreator != null) {
@@ -108,9 +118,9 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
                     int positionType = getPackedPositionType(packed);
                     int groupPosition, childPosition = GROUP_INDEX;
                     if (positionType != PACKED_POSITION_TYPE_NULL) {
-                        // (Child类型时也有Group信息)
+                        // (Child绫诲瀷鏃朵篃鏈塆roup淇℃伅)
                         groupPosition = getPackedPositionGroup(packed);
-                        // 如果是child类型,则取出childPosition
+                        // 濡傛灉鏄痗hild绫诲瀷,鍒欏彇鍑篶hildPosition
                         if (positionType == PACKED_POSITION_TYPE_CHILD) {
                             childPosition = getPackedPositionChild(packed);
                         }
@@ -121,7 +131,8 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
                     mTouchView.smoothCloseMenu();
                 }
             }
-        });
+        };
+        super.setAdapter(mAdapter);
     }
     @Override
     @Deprecated
@@ -251,7 +262,7 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
                     mTouchView.smoothCloseMenu();
                 }
                 mTouchView = (SwipeMenuLayout) view;
-                mTouchView.smoothOpenMenu();
+                mTouchView.openMenu();
             }
         }
     }
