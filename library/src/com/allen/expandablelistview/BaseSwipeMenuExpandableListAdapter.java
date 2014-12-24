@@ -12,6 +12,7 @@ import com.baoyz.swipemenulistview.ContentViewWrapper;
  */
 public abstract class BaseSwipeMenuExpandableListAdapter extends BaseExpandableListAdapter {
     private static final String TAG = "BaseSwipeMenuExpandableListAdapter";
+    public SwipeMenuExpandableListAdapter wrapperAdapter;
 
     public abstract boolean isGroupSwipable(int groupPosition);
 
@@ -32,4 +33,12 @@ public abstract class BaseSwipeMenuExpandableListAdapter extends BaseExpandableL
     public abstract ContentViewWrapper getChildViewAndReUsable(int groupPosition, int childPosition,
             boolean isLastChild, View convertView,
  ViewGroup parent);
+    
+    public void notifyDataSetChanged(boolean ifKeepMenuOpen){
+    	if(ifKeepMenuOpen && wrapperAdapter != null){
+    		wrapperAdapter.notifyDataSetChanged(ifKeepMenuOpen);
+    	}else{
+    		this.notifyDataSetChanged();
+    	}
+    }
 }

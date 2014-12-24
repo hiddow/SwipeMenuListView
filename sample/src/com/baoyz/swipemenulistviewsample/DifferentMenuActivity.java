@@ -1,12 +1,16 @@
 package com.baoyz.swipemenulistviewsample;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -373,8 +377,7 @@ private SwipeMenuExpandableListView listView;
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			listView.notifyDataSetChanged(true);
-			listView.smoothOpenMenu(0);
+			mAdapter.notifyDataSetChanged(true);
 		}
 	};
 

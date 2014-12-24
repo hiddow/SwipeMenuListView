@@ -84,10 +84,7 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
     		return -1;
     	return this.getPositionForView(mTouchView);
     }
-    public void notifyDataSetChanged(boolean ifKeepMenuOpen){
-    	if(mAdapter!=null)
-    		mAdapter.notifyDataSetChanged(ifKeepMenuOpen);
-    }
+   
     /**
      * 寮哄埗浣跨敤姝ゆ柟娉曪紝BaseExpandableListAdapter锛屽彲浠ュ垏鎹hild鐨刲ayout
      * 
@@ -132,6 +129,7 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
                 }
             }
         };
+        adapter.wrapperAdapter = mAdapter;
         super.setAdapter(mAdapter);
     }
     @Override

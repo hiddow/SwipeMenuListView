@@ -1,7 +1,12 @@
 package com.allen.expandablelistview;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +29,17 @@ public class SwipeMenuExpandableListAdapter implements ExpandableListAdapter, On
                                              // clicked, it fires an onclick
                                                 // event which childPostion is
                                                 // -1991
-    private SwipeMenuExpandableListView mList;
+	private SwipeMenuExpandableListView mList;
+	Handler mHandler = new Handler() {
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case 0:
+				mList.smoothOpenMenu(msg.arg1);
+				break;
+			}
+			super.handleMessage(msg);
+		}
+	};
     public void notifyDataSetChanged(boolean ifKeepMenuOpen){
     	int i = -1;
     	if(ifKeepMenuOpen){
@@ -33,7 +48,11 @@ public class SwipeMenuExpandableListAdapter implements ExpandableListAdapter, On
     	mAdapter.notifyDataSetChanged();
     	Log.i("keep","posi is:"+i);
     	if(ifKeepMenuOpen && i >= 0){
-    		mList.smoothOpenMenu(i);
+    		Message m = new Message();
+    		m.what = 0;
+    		m.arg1 = i;
+//    		mList.smoothOpenMenu(i);
+    		mHandler.sendMessageDelayed(m, 0);
     	}
     }    
     private BaseSwipeMenuExpandableListAdapter mAdapter;
