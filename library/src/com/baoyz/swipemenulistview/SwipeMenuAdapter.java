@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -22,13 +25,40 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
 		OnSwipeItemClickListener {
 
     private BaseSwipeListAdapter mAdapter;
+    Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    mList.smoothOpenMenu(msg.arg1);
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    };
 	private Context mContext;
     private OnMenuItemClickListener onMenuItemClickListener;
+    private SwipeMenuListView mList;
 
-    public SwipeMenuAdapter(Context context, BaseSwipeListAdapter adapter) {
+    public SwipeMenuAdapter(Context context, BaseSwipeListAdapter adapter, SwipeMenuListView listView) {
 		mAdapter = adapter;
 		mContext = context;
+        mList = listView;
 	}
+
+    public void notifyDataSetChanged(boolean ifKeepMenuOpen) {
+        int i = -1;
+        if (ifKeepMenuOpen) {
+            i = mList.getOpenedPosition();
+        }
+        mAdapter.notifyDataSetChanged();
+        Log.i("keep", "posi is:" + i);
+        if (ifKeepMenuOpen && i >= 0) {
+            Message m = new Message();
+            m.what = 0;
+            m.arg1 = i;
+            mHandler.sendMessageDelayed(m, 0);
+        }
+    }
 
 	@Override
 	public int getCount() {

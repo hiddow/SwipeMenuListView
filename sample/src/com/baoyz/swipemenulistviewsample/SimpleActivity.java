@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -41,7 +42,13 @@ public class SimpleActivity extends Activity {
         setContentView(R.layout.activity_list_for_simple);
 
         mAppList = getPackageManager().getInstalledApplications(0);
-
+        findViewById(R.id.btn).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                mAdapter.notifyDataSetChanged(true);
+            }
+        });
         mListView = (SwipeMenuListView) findViewById(R.id.listView);
         if (getIntent().getBooleanExtra("stick_mode", false)) {
             mListView.setmMenuStickTo(SwipeMenuListView.STICK_TO_SCREEN);

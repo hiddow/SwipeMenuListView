@@ -1,8 +1,5 @@
 package com.allen.expandablelistview;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.os.Handler;
@@ -51,7 +48,6 @@ public class SwipeMenuExpandableListAdapter implements ExpandableListAdapter, On
     		Message m = new Message();
     		m.what = 0;
     		m.arg1 = i;
-//    		mList.smoothOpenMenu(i);
     		mHandler.sendMessageDelayed(m, 0);
     	}
     }    

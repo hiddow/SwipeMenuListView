@@ -85,6 +85,11 @@ public class SwipeMenuListView extends ListView implements Swipable {
         mTouchState = TOUCH_STATE_NONE;
     }
 
+    public int getOpenedPosition() {
+        if (mTouchView == null || !mTouchView.isOpen())
+            return -1;
+        return this.getPositionForView(mTouchView);
+    }
     @Override
     @Deprecated
     public void setAdapter(ListAdapter adapter) {
@@ -92,7 +97,7 @@ public class SwipeMenuListView extends ListView implements Swipable {
     }
 
     public void setAdapter(BaseSwipeListAdapter adapter) {
-        super.setAdapter(new SwipeMenuAdapter(getContext(), adapter) {
+        SwipeMenuAdapter mAdapter = new SwipeMenuAdapter(getContext(), adapter,this) {
             @Override
             public void createMenu(SwipeMenu menu) {
                 if (mMenuCreator != null) {
@@ -110,7 +115,9 @@ public class SwipeMenuListView extends ListView implements Swipable {
                     mTouchView.smoothCloseMenu();
                 }
             }
-        });
+        };
+        adapter.wrapperAdapter = mAdapter;
+        super.setAdapter(mAdapter);
     }
 
     public void setCloseInterpolator(Interpolator interpolator) {
