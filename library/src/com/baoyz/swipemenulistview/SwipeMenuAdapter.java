@@ -2,7 +2,9 @@ package com.baoyz.swipemenulistview;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.WrapperListAdapter;
 
 import com.baoyz.swipemenulistview.SwipeMenuListView.OnMenuItemClickListener;
@@ -30,6 +34,12 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
             switch (msg.what) {
                 case 0:
                     mList.smoothOpenMenu(msg.arg1);
+                    this.sendEmptyMessageDelayed(1, 250);
+                    break;
+                case 1:
+                    if (v != null) {
+                        ((ViewGroup) mList.getParent()).removeView(v);
+                    }
                     break;
             }
             super.handleMessage(msg);
@@ -45,10 +55,41 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
         mList = listView;
 	}
 
+    SwipeMenuLayout tv;
+    View v;
+    long last_time = System.currentTimeMillis();
+
     public void notifyDataSetChanged(boolean ifKeepMenuOpen) {
+        if (System.currentTimeMillis() - last_time < 370) {
+            return;
+        }
+        last_time = System.currentTimeMillis();
         int i = -1;
         if (ifKeepMenuOpen) {
+           if (v != null) {            ((ViewGroup) mList.getParent()).removeView(v);
+           }
             i = mList.getOpenedPosition();
+            tv = mList.getTouchView();
+            if (i >= 0 && tv != null) {
+                ViewGroup.LayoutParams lpNew = new ViewGroup.LayoutParams(tv.getWidth(), tv.getHeight());
+                if (mList.getParent() instanceof RelativeLayout) {
+                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mList.getLayoutParams();
+                    int[] fLo = new int[2];
+                    int[] sLo = new int[2];
+                    ((ViewGroup) mList.getParent()).getLocationOnScreen(fLo);
+                    tv.getLocationOnScreen(sLo);
+                    lpNew = new LayoutParams(tv.getWidth(), tv.getHeight());
+                    ((RelativeLayout.LayoutParams) lpNew).setMargins(lp.leftMargin, sLo[1] - fLo[1], lp.rightMargin, 0);
+                    v = new View(mContext);
+                    View v1 = mList.getRootView();
+                    v1.setDrawingCacheEnabled(true);
+                    Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+                    bitmap = Bitmap.createBitmap(bitmap, sLo[0], sLo[1], tv.getWidth(), tv.getHeight(), null, false);
+                    v.setBackgroundDrawable(new BitmapDrawable(bitmap));
+                    v.setLayoutParams(lpNew);
+                    ((ViewGroup) mList.getParent()).addView(v, lpNew);
+                }
+            }
         }
         mAdapter.notifyDataSetChanged();
         Log.i("keep", "posi is:" + i);
@@ -57,6 +98,8 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
             m.what = 0;
             m.arg1 = i;
             mHandler.sendMessageDelayed(m, 0);
+        } else {
+            mList.setTouchView(null);
         }
     }
 

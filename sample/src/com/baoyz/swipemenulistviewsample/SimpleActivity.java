@@ -28,7 +28,6 @@ import com.baoyz.swipemenulistview.SwipeMenuCreator;
 import com.baoyz.swipemenulistview.SwipeMenuItem;
 import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.baoyz.swipemenulistview.SwipeMenuListView.OnMenuItemClickListener;
-import com.baoyz.swipemenulistview.SwipeMenuListView.OnSwipeListener;
 
 public class SimpleActivity extends Activity {
 
@@ -113,18 +112,18 @@ public class SimpleActivity extends Activity {
         });
 
         // set SwipeListener
-        mListView.setOnSwipeListener(new OnSwipeListener() {
-
-            @Override
-            public void onSwipeStart(int position) {
-                // swipe start
-            }
-
-            @Override
-            public void onSwipeEnd(int position) {
-                // swipe end
-            }
-        });
+        // mListView.setOnSwipeListener(new OnSwipeListener() {
+        //
+        // @Override
+        // public void onSwipeStart(int position) {
+        // // swipe start
+        // }
+        //
+        // @Override
+        // public void onSwipeEnd(int position) {
+        // // swipe end
+        // }
+        // });
 
         // other setting
         // listView.setCloseInterpolator(new BounceInterpolator());
