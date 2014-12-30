@@ -3,14 +3,17 @@ package com.baoyz.swipemenulistview;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
@@ -25,8 +28,7 @@ import com.baoyz.swipemenulistview.SwipeMenuView.OnSwipeItemClickListener;
  * @date 2014-8-24
  * 
  */
-public class SwipeMenuAdapter implements WrapperListAdapter,
-		OnSwipeItemClickListener {
+public class SwipeMenuAdapter implements WrapperListAdapter, OnSwipeItemClickListener {
 
     private BaseSwipeListAdapter mAdapter;
     Handler mHandler = new Handler() {
@@ -38,22 +40,27 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
                     break;
                 case 1:
                     if (v != null) {
-                        ((ViewGroup) mList.getParent()).removeView(v);
+                        remove();
                     }
                     break;
             }
             super.handleMessage(msg);
         }
     };
-	private Context mContext;
+
+    private void remove() {
+        ((ViewGroup) mList.getParent()).removeView(v);
+        v = null;
+    }
+    private Context mContext;
     private OnMenuItemClickListener onMenuItemClickListener;
     private SwipeMenuListView mList;
 
     public SwipeMenuAdapter(Context context, BaseSwipeListAdapter adapter, SwipeMenuListView listView) {
-		mAdapter = adapter;
-		mContext = context;
+        mAdapter = adapter;
+        mContext = context;
         mList = listView;
-	}
+    }
 
     SwipeMenuLayout tv;
     View v;
@@ -66,29 +73,32 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
         last_time = System.currentTimeMillis();
         int i = -1;
         if (ifKeepMenuOpen) {
-           if (v != null) {            ((ViewGroup) mList.getParent()).removeView(v);
-           }
+            if (v != null) {
+                remove();
+            }
             i = mList.getOpenedPosition();
             tv = mList.getTouchView();
-            if (i >= 0 && tv != null) {
-                ViewGroup.LayoutParams lpNew = new ViewGroup.LayoutParams(tv.getWidth(), tv.getHeight());
+            if (i >= 0 && tv != null
+                    && (mList.getParent() instanceof RelativeLayout || mList.getParent() instanceof FrameLayout)) {
+                ViewGroup.LayoutParams lpNew = null;
+                int[] fLo = new int[2];
+                int[] sLo = new int[2];
+                int[] sLoInwindow = new int[2];
+                ((ViewGroup) mList.getParent()).getLocationOnScreen(fLo);
+                tv.getLocationOnScreen(sLo);
+                tv.getLocationInWindow(sLoInwindow);
                 if (mList.getParent() instanceof RelativeLayout) {
                     RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mList.getLayoutParams();
-                    int[] fLo = new int[2];
-                    int[] sLo = new int[2];
-                    ((ViewGroup) mList.getParent()).getLocationOnScreen(fLo);
-                    tv.getLocationOnScreen(sLo);
                     lpNew = new LayoutParams(tv.getWidth(), tv.getHeight());
                     ((RelativeLayout.LayoutParams) lpNew).setMargins(lp.leftMargin, sLo[1] - fLo[1], lp.rightMargin, 0);
-                    v = new View(mContext);
-                    View v1 = mList.getRootView();
-                    v1.setDrawingCacheEnabled(true);
-                    Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-                    bitmap = Bitmap.createBitmap(bitmap, sLo[0], sLo[1], tv.getWidth(), tv.getHeight(), null, false);
-                    v.setBackgroundDrawable(new BitmapDrawable(bitmap));
-                    v.setLayoutParams(lpNew);
-                    ((ViewGroup) mList.getParent()).addView(v, lpNew);
+                } else if (mList.getParent() instanceof FrameLayout) {
+                    FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mList.getLayoutParams();
+                    lpNew = new FrameLayout.LayoutParams(tv.getWidth(), tv.getHeight());
+                    ((FrameLayout.LayoutParams) lpNew).setMargins(lp.leftMargin, sLo[1] - fLo[1], lp.rightMargin, 0);
                 }
+                v = new View(mContext);
+                v.setBackgroundDrawable(getDrawable(tv));
+                ((ViewGroup) mList.getParent()).addView(v, lpNew);
             }
         }
         mAdapter.notifyDataSetChanged();
@@ -103,23 +113,29 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
         }
     }
 
-	@Override
-	public int getCount() {
-		return mAdapter.getCount();
-	}
+    private Drawable getDrawable(View v) {
+        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        v.draw(c);
+        return new BitmapDrawable(b);
+    }
+    @Override
+    public int getCount() {
+        return mAdapter.getCount();
+    }
 
-	@Override
-	public Object getItem(int position) {
-		return mAdapter.getItem(position);
-	}
+    @Override
+    public Object getItem(int position) {
+        return mAdapter.getItem(position);
+    }
 
-	@Override
-	public long getItemId(int position) {
-		return mAdapter.getItemId(position);
-	}
+    @Override
+    public long getItemId(int position) {
+        return mAdapter.getItemId(position);
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
         SwipeMenuLayout layout = null;
         View subConvert = null;
         if (convertView instanceof SwipeMenuLayout) {
@@ -127,96 +143,92 @@ public class SwipeMenuAdapter implements WrapperListAdapter,
         }
         ContentViewWrapper contentViewWrapper = mAdapter.getViewAndReusable(position, subConvert, parent);
         if (convertView == null || !contentViewWrapper.ifReUsable) {
-			SwipeMenu menu = new SwipeMenu(mContext);
-			menu.setViewType(mAdapter.getItemViewType(position));
-			createMenu(menu);
-			SwipeMenuView menuView = new SwipeMenuView(menu,
-					(SwipeMenuListView) parent);
-			menuView.setOnSwipeItemClickListener(this);
-			SwipeMenuListView listView = (SwipeMenuListView) parent;
-            layout = new SwipeMenuLayout(contentViewWrapper.view, menuView,
-					listView.getCloseInterpolator(),
+            SwipeMenu menu = new SwipeMenu(mContext);
+            menu.setViewType(mAdapter.getItemViewType(position));
+            createMenu(menu);
+            SwipeMenuView menuView = new SwipeMenuView(menu, (SwipeMenuListView) parent);
+            menuView.setOnSwipeItemClickListener(this);
+            SwipeMenuListView listView = (SwipeMenuListView) parent;
+            layout = new SwipeMenuLayout(contentViewWrapper.view, menuView, listView.getCloseInterpolator(),
                     listView.getOpenInterpolator(), listView.getmMenuStickTo());
-			layout.setPosition(position);
-		} else {
-			layout = (SwipeMenuLayout) convertView;
-			layout.closeMenu();
-			layout.setPosition(position);
-		}
-		return layout;
-	}
+            layout.setPosition(position);
+        } else {
+            layout = (SwipeMenuLayout) convertView;
+            layout.closeMenu();
+            layout.setPosition(position);
+        }
+        return layout;
+    }
 
-	public void createMenu(SwipeMenu menu) {
-		// Test Code
-		SwipeMenuItem item = new SwipeMenuItem(mContext);
-		item.setTitle("Item 1");
-		item.setBackground(new ColorDrawable(Color.GRAY));
-		item.setWidth(300);
-		menu.addMenuItem(item);
+    public void createMenu(SwipeMenu menu) {
+        // Test Code
+        SwipeMenuItem item = new SwipeMenuItem(mContext);
+        item.setTitle("Item 1");
+        item.setBackground(new ColorDrawable(Color.GRAY));
+        item.setWidth(300);
+        menu.addMenuItem(item);
 
-		item = new SwipeMenuItem(mContext);
-		item.setTitle("Item 2");
-		item.setBackground(new ColorDrawable(Color.RED));
-		item.setWidth(300);
-		menu.addMenuItem(item);
-	}
+        item = new SwipeMenuItem(mContext);
+        item.setTitle("Item 2");
+        item.setBackground(new ColorDrawable(Color.RED));
+        item.setWidth(300);
+        menu.addMenuItem(item);
+    }
 
-	@Override
-	public void onItemClick(SwipeMenuView view, SwipeMenu menu, int index) {
-		if (onMenuItemClickListener != null) {
-			onMenuItemClickListener.onMenuItemClick(view.getPosition(), menu,
-					index);
-		}
-	}
+    @Override
+    public void onItemClick(SwipeMenuView view, SwipeMenu menu, int index) {
+        if (onMenuItemClickListener != null) {
+            onMenuItemClickListener.onMenuItemClick(view.getPosition(), menu, index);
+        }
+    }
 
-	public void setOnMenuItemClickListener(
-			OnMenuItemClickListener onMenuItemClickListener) {
-		this.onMenuItemClickListener = onMenuItemClickListener;
-	}
+    public void setOnMenuItemClickListener(OnMenuItemClickListener onMenuItemClickListener) {
+        this.onMenuItemClickListener = onMenuItemClickListener;
+    }
 
-	@Override
-	public void registerDataSetObserver(DataSetObserver observer) {
-		mAdapter.registerDataSetObserver(observer);
-	}
+    @Override
+    public void registerDataSetObserver(DataSetObserver observer) {
+        mAdapter.registerDataSetObserver(observer);
+    }
 
-	@Override
-	public void unregisterDataSetObserver(DataSetObserver observer) {
-		mAdapter.unregisterDataSetObserver(observer);
-	}
+    @Override
+    public void unregisterDataSetObserver(DataSetObserver observer) {
+        mAdapter.unregisterDataSetObserver(observer);
+    }
 
-	@Override
-	public boolean areAllItemsEnabled() {
-		return mAdapter.areAllItemsEnabled();
-	}
+    @Override
+    public boolean areAllItemsEnabled() {
+        return mAdapter.areAllItemsEnabled();
+    }
 
-	@Override
-	public boolean isEnabled(int position) {
-		return mAdapter.isEnabled(position);
-	}
+    @Override
+    public boolean isEnabled(int position) {
+        return mAdapter.isEnabled(position);
+    }
 
-	@Override
-	public boolean hasStableIds() {
-		return mAdapter.hasStableIds();
-	}
+    @Override
+    public boolean hasStableIds() {
+        return mAdapter.hasStableIds();
+    }
 
-	@Override
-	public int getItemViewType(int position) {
-		return mAdapter.getItemViewType(position);
-	}
+    @Override
+    public int getItemViewType(int position) {
+        return mAdapter.getItemViewType(position);
+    }
 
-	@Override
-	public int getViewTypeCount() {
-		return mAdapter.getViewTypeCount();
-	}
+    @Override
+    public int getViewTypeCount() {
+        return mAdapter.getViewTypeCount();
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return mAdapter.isEmpty();
-	}
+    @Override
+    public boolean isEmpty() {
+        return mAdapter.isEmpty();
+    }
 
-	@Override
-	public ListAdapter getWrappedAdapter() {
-		return mAdapter;
-	}
+    @Override
+    public ListAdapter getWrappedAdapter() {
+        return mAdapter;
+    }
 
 }

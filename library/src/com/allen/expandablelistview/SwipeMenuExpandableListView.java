@@ -45,19 +45,19 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
     private final Object lock = new Object();
 
     public void setTouchView(View v) {
-        synchronized (lock) {
+        // synchronized (lock) {''
             mTouchView = (SwipeMenuLayout) v;
-        }
+        // }
     }
 
     public SwipeMenuLayout getTouchView() {
-        synchronized (lock) {
+        // synchronized (lock) {
             return mTouchView;
-        }
+        // }
     }
 
     public int getOpenedPosition() {
-        synchronized (lock) {
+        // synchronized (lock) {
             if (null == mTouchView || !mTouchView.isOpen())
                 return -1;
             try {
@@ -65,7 +65,7 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
             } catch (NullPointerException e) {
                 return -1;
             }
-        }
+        // }
     }
 
     private Handler mHandler = new Handler() {
@@ -293,13 +293,13 @@ public class SwipeMenuExpandableListView extends ExpandableListView implements S
             View view = getChildAt(position - getFirstVisiblePosition());
             if (view instanceof SwipeMenuLayout) {
                 mTouchPosition = position;
-                synchronized (lock) {
+                // synchronized (lock) {
                     if (mTouchView != null && mTouchView.isOpen()) {
                         mTouchView.smoothCloseMenu();
                     }
                     mTouchView = (SwipeMenuLayout) view;
                     mTouchView.openMenu();
-                }
+                // }
             }
         }
     }

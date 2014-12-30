@@ -12,11 +12,17 @@
         android:focusable="false"
         android:text="Click this:notify data set changed and re-open the opened menu" />
 
-    <com.allen.expandablelistview.SwipeMenuExpandableListView
-        android:id="@+id/listView"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:layout_below="@id/btn"
-        android:groupIndicator="@null" />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn" >
+
+        <com.allen.expandablelistview.SwipeMenuExpandableListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:layout_below="@id/btn"
+            android:groupIndicator="@null" />
+    </FrameLayout>
 
 </RelativeLayout>

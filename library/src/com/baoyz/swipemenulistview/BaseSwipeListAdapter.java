@@ -17,8 +17,9 @@ public abstract class BaseSwipeListAdapter extends BaseAdapter {
     /**
      * notify dataSetChanged, when ifKeepMenuOpen is true, ListView will keep
      * menu opened. notice that if use this feature, you'd better put
-     * SwipeListView in RelativeLayout for a better visual effect,otherwise the
-     * item which's menu is opened will flash when notifyDataSetChanged(true)
+     * SwipeListView in RelativeLayout/FrameLayout for a better visual
+     * effect,otherwise the item which's menu is opened will flash when
+     * notifyDataSetChanged(true)
      * 
      * @param ifKeepMenuOpen
      */

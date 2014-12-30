@@ -3,13 +3,16 @@ package com.allen.expandablelistview;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
@@ -27,76 +30,95 @@ import com.baoyz.swipemenulistview.SwipeMenuLayout;
 public class SwipeMenuExpandableListAdapter implements ExpandableListAdapter, OnSwipeItemClickListenerForExpandable {
 
     public static final int GROUP_INDEX = -1991;// when a group's swipe menu was
-                                             // clicked, it fires an onclick
+                                                // clicked, it fires an onclick
                                                 // event which childPostion is
                                                 // -1991
-	private SwipeMenuExpandableListView mList;
+    private SwipeMenuExpandableListView mList;
     Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
                     mList.smoothOpenMenu(msg.arg1);
-                    this.sendEmptyMessageDelayed(1, 200);
+                    remove();
+                    // this.sendEmptyMessageDelayed(1, 0);
                     break;
                 case 1:
                     if (v != null) {
-                        ((ViewGroup) mList.getParent()).removeView(v);
+                        remove();
                     }
                     break;
             }
             super.handleMessage(msg);
         }
     };
-    SwipeMenuLayout tv;
-    View v;
-    public void notifyDataSetChanged(boolean ifKeepMenuOpen){
-        int i = -1;
 
-    	if(ifKeepMenuOpen){
-            if (v != null) {
-                ((ViewGroup) mList.getParent()).removeView(v);
+    private void remove() {
+        ((ViewGroup) mList.getParent()).removeView(v);
+        v = null;
+    }
+
+    View v = null, tv;
+    long last_time = System.currentTimeMillis();
+    int i;
+
+    public void notifyDataSetChanged(boolean ifKeepMenuOpen) {
+        if (System.currentTimeMillis() - last_time < 370) {
+            return;
+        }
+        last_time = System.currentTimeMillis();
+
+        if (v != null) {
+            remove();
+        }
+        i = mList.getOpenedPosition();
+        tv = mList.getTouchView();
+        if (i >= 0 && tv != null
+                && (mList.getParent() instanceof RelativeLayout || mList.getParent() instanceof FrameLayout)) {
+            ViewGroup.LayoutParams lpNew = null;
+            int[] fLo = new int[2];
+            int[] sLo = new int[2];
+            int[] sLoInwindow = new int[2];
+            ((ViewGroup) mList.getParent()).getLocationOnScreen(fLo);
+            tv.getLocationOnScreen(sLo);
+            tv.getLocationInWindow(sLoInwindow);
+            if (mList.getParent() instanceof RelativeLayout) {
+                RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mList.getLayoutParams();
+                lpNew = new LayoutParams(tv.getWidth(), tv.getHeight());
+                ((RelativeLayout.LayoutParams) lpNew).setMargins(lp.leftMargin, sLo[1] - fLo[1], lp.rightMargin, 0);
+            } else if (mList.getParent() instanceof FrameLayout) {
+                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mList.getLayoutParams();
+                lpNew = new FrameLayout.LayoutParams(tv.getWidth(), tv.getHeight());
+                ((FrameLayout.LayoutParams) lpNew).setMargins(lp.leftMargin, sLo[1] - fLo[1], lp.rightMargin, 0);
             }
-    		i = mList.getOpenedPosition();
-            tv = mList.getTouchView();
-            if (i >= 0 && tv != null) {
-                ViewGroup.LayoutParams lpNew = new ViewGroup.LayoutParams(tv.getWidth(), tv.getHeight());
-                if (mList.getParent() instanceof RelativeLayout) {
-                    RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mList
-                            .getLayoutParams();
-                    int[] fLo = new int[2];
-                    int[] sLo = new int[2];
-                    ((ViewGroup) mList.getParent()).getLocationOnScreen(fLo);
-                    tv.getLocationOnScreen(sLo);
-                    lpNew = new LayoutParams(tv.getWidth(), tv.getHeight());
-                    ((RelativeLayout.LayoutParams) lpNew).setMargins(lp.leftMargin, sLo[1] - fLo[1],
-                            lp.rightMargin, 0);
-                    v = new View(mContext);
-                    View v1 = mList.getRootView();
-                    v1.setDrawingCacheEnabled(true);
-                    Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-                    bitmap = Bitmap.createBitmap(bitmap, sLo[0], sLo[1], tv.getWidth(), tv.getHeight(), null, false);
-                    v.setBackgroundDrawable(new BitmapDrawable(bitmap));
-                    v.setLayoutParams(lpNew);
-                    ((ViewGroup) mList.getParent()).addView(v, lpNew);
-                }
-            }
-    	}
-    	mAdapter.notifyDataSetChanged();
-    	Log.i("keep","posi is:"+i);
-    	if(ifKeepMenuOpen && i >= 0){
-    		Message m = new Message();
-    		m.what = 0;
-    		m.arg1 = i;
-    		mHandler.sendMessageDelayed(m, 0);
+            v = new View(mContext);
+            v.setBackgroundDrawable(getDrawable(tv));
+            ((ViewGroup) mList.getParent()).addView(v, lpNew);
+        }
+        mAdapter.notifyDataSetChanged();
+        Log.i("keep", "posi is:" + i);
+        if (ifKeepMenuOpen && i >= 0) {
+            Message m = new Message();
+            m.what = 0;
+            m.arg1 = i;
+            mHandler.sendMessageDelayed(m, 0);
         } else {
             mList.setTouchView(null);
-    	}
-    }    
-    private BaseSwipeMenuExpandableListAdapter mAdapter;
+        }
+    }
+
+    private Drawable getDrawable(View v) {
+        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        v.draw(c);
+        return new BitmapDrawable(b);
+    }
+
+    BaseSwipeMenuExpandableListAdapter mAdapter;
     private Context mContext;
     private OnMenuItemClickListenerForExpandable onMenuItemClickListener;
 
-    public SwipeMenuExpandableListAdapter(Context context, BaseSwipeMenuExpandableListAdapter adapter,SwipeMenuExpandableListView lv) {
+    public SwipeMenuExpandableListAdapter(Context context, BaseSwipeMenuExpandableListAdapter adapter,
+            SwipeMenuExpandableListView lv) {
         mAdapter = adapter;
         mContext = context;
         mList = lv;
